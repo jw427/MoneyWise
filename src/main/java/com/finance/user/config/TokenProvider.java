@@ -63,7 +63,7 @@ public class TokenProvider {
                             .signWith(SignatureAlgorithm.HS256, key)
                             .compact();
         // token 객체 생성
-        Token token = new Token(refreshToken, userId, refreshTokenValidTime);
+        Token token = new Token(refreshToken, userId.toString(), refreshTokenValidTime);
         // redis 저장
         tokenRepository.save(token);
         return refreshToken;
