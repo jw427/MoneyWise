@@ -1,5 +1,7 @@
 package com.finance.user.service;
 
+import com.finance.exception.ConflictException;
+import com.finance.exception.ErrorCode;
 import com.finance.user.domain.Role;
 import com.finance.user.domain.User;
 import com.finance.user.dto.SignUpRequestDto;
@@ -17,6 +19,9 @@ public class UserService {
 
     // 회원가입
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
+        // 같은 account가 존재할 경우
+        if(userRepository.findByAccount(requestDto.account()).isPresent())
+            throw new ConflictException(ErrorCode.ALREADY_EXIST_ACCOUNT);
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.password());
         // User 생성
