@@ -1,5 +1,6 @@
 package com.finance.category.domain;
 
+import com.finance.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -32,4 +33,8 @@ public class Category {
     private LocalDateTime updatedAt;
 
     private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
