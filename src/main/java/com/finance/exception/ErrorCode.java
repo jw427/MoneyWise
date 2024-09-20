@@ -15,7 +15,10 @@ public enum ErrorCode {
 
     // 로그인
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "계정명 또는 비밀번호를 확인해주세요. 회원가입하지 않았을 경우 회원가입을 진행해주세요."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다.");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
+
+    // jwt
+    INVALID_OR_EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "세션이 만료되었습니다. 다시 로그인해주세요.");
 
     private final HttpStatus status;
     private final String message;
