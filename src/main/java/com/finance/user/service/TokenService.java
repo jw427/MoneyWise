@@ -12,4 +12,9 @@ public class TokenService {
     private final TokenRepository tokenRepository;
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+
+    // accessToken 재발급
+    public void createNewAccessToken() {
+
+    }
 }
