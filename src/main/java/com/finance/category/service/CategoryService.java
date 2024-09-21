@@ -1,14 +1,9 @@
 package com.finance.category.service;
 
 import com.finance.category.domain.Category;
-import com.finance.category.dto.CategoryListResponseDto;
-import com.finance.category.dto.CreateCategoryRequestDto;
-import com.finance.category.dto.CreateCategoryResponseDto;
+import com.finance.category.dto.*;
 import com.finance.category.repository.CategoryRepository;
-import com.finance.exception.ConflictException;
-import com.finance.exception.ErrorCode;
-import com.finance.exception.NotFoundException;
-import com.finance.exception.UnauthorizedException;
+import com.finance.exception.*;
 import com.finance.user.config.TokenProvider;
 import com.finance.user.domain.User;
 import com.finance.user.repository.UserRepository;
@@ -17,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +42,7 @@ public class CategoryService {
     }
 
     // 카테고리 전체 조회
+    @Transactional(readOnly = true)
     public List<CategoryListResponseDto> getCategoryList(String token) {
         // accessToken에서 회원 정보 가져오기
         User user = getUserInfo(token);
@@ -59,6 +56,23 @@ public class CategoryService {
                 .collect(Collectors.toList());
         // responsedto 반환
         return responseDto;
+    }
+
+    // 카테고리 수정
+    @Transactional
+    public ModifyCategoryResponseDto modifyCategory(Long categoryId, String token, ModifyCategoryRequestDto requestDto) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // categoryId로 category 찾기
+        Category category = categoryRepository.findByCategoryId(categoryId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
+        // 회원 본인이 만든 카테고리가 아닌 경우 수정 불가
+        if(category.getUser() == null || !user.getUserId().equals(category.getUser().getUserId()))
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        // 카테고리 수정
+        category.modifyCategory(requestDto.categoryName());
+        // responseDto 반환
+        return new ModifyCategoryResponseDto("카테고리명이 " + requestDto + "로 수정되었습니다.", category.getUpdatedAt());
     }
 
     // accessToken에서 회원 정보 가져오기

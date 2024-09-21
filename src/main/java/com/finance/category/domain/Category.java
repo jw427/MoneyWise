@@ -37,4 +37,9 @@ public class Category {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Category modifyCategory(String categoryName) {
+        this.categoryName = categoryName;
+        return this;
+    }
 }

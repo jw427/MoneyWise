@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // 공통
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     // 회원가입
     ALREADY_EXIST_ACCOUNT(HttpStatus.CONFLICT, "이미 존재하는 계정명입니다."),
@@ -21,7 +22,8 @@ public enum ErrorCode {
     INVALID_OR_EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "세션이 만료되었습니다. 다시 로그인해주세요."),
 
     // 카테고리
-    ALREADY_EXIST_CATEGORY(HttpStatus.CONFLICT, "이미 존재하는 카테고리입니다.");
+    ALREADY_EXIST_CATEGORY(HttpStatus.CONFLICT, "이미 존재하는 카테고리입니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다.");
 
     private final HttpStatus status;
     private final String message;
