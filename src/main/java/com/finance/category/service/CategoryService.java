@@ -51,9 +51,11 @@ public class CategoryService {
         User user = getUserInfo(token);
         // 해당 회원이 만든 카테고리와 기본 카테고리 모두 조회
         List<Category> categoryList = categoryRepository.findByUser_UserId(user.getUserId());
-        // responsedto로 변환
+        // responsedto로 변환 - user가 null인 카테고리는 기본 카테고리이므로 null 처리
         List<CategoryListResponseDto> responseDto = categoryList.stream()
-                .map(list -> new CategoryListResponseDto(list.getCategoryName(), list.getUser().getUserId()))
+                .map(list -> new CategoryListResponseDto(
+                        list.getCategoryName(),
+                        list.getUser() != null ? list.getUser().getUserId() : null))
                 .collect(Collectors.toList());
         // responsedto 반환
         return responseDto;
