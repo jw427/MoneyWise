@@ -1,6 +1,7 @@
 package com.finance.category.service;
 
 import com.finance.category.domain.Category;
+import com.finance.category.dto.CategoryListResponseDto;
 import com.finance.category.dto.CreateCategoryRequestDto;
 import com.finance.category.dto.CreateCategoryResponseDto;
 import com.finance.category.repository.CategoryRepository;
@@ -14,6 +15,9 @@ import com.finance.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +43,20 @@ public class CategoryService {
         categoryRepository.save(category);
         // responseDto 반환
         return new CreateCategoryResponseDto(requestDto.categoryName() + "가 생성되었습니다!", category.getCreatedAt());
+    }
+
+    // 카테고리 전체 조회
+    public List<CategoryListResponseDto> getCategoryList(String token) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // 해당 회원이 만든 카테고리와 기본 카테고리 모두 조회
+        List<Category> categoryList = categoryRepository.findByUser_UserId(user.getUserId());
+        // responsedto로 변환
+        List<CategoryListResponseDto> responseDto = categoryList.stream()
+                .map(list -> new CategoryListResponseDto(list.getCategoryName(), list.getUser().getUserId()))
+                .collect(Collectors.toList());
+        // responsedto 반환
+        return responseDto;
     }
 
     // accessToken에서 회원 정보 가져오기
