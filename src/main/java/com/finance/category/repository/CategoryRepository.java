@@ -17,4 +17,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // 회원 식별값으로 카테고리 전체 조회
     @Query("SELECT c FROM Category c WHERE (c.user IS NULL OR c.user.userId = :userId) AND c.deletedAt IS NULL")
     List<Category> findByUser_UserId(@Param("userId") UUID userId);
+
+    // 카테고리 식별값으로 카테고리 찾기
+    Optional<Category> findByCategoryId(Long categoryId);
 }
