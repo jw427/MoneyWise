@@ -72,7 +72,7 @@ public class CategoryService {
         // 카테고리 수정
         category.modifyCategory(requestDto.categoryName());
         // responseDto 반환
-        return new ModifyCategoryResponseDto("카테고리명이 " + requestDto + "로 수정되었습니다.", category.getUpdatedAt());
+        return new ModifyCategoryResponseDto("카테고리명이 " + requestDto.categoryName() + "로 수정되었습니다.", category.getUpdatedAt());
     }
 
     // accessToken에서 회원 정보 가져오기
