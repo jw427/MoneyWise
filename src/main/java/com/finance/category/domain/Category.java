@@ -42,4 +42,9 @@ public class Category {
         this.categoryName = categoryName;
         return this;
     }
+
+    public Category deleteCategory() {
+        this.deletedAt = LocalDateTime.now();
+        return this;
+    }
 }

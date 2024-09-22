@@ -75,6 +75,23 @@ public class CategoryService {
         return new ModifyCategoryResponseDto("카테고리명이 " + requestDto.categoryName() + "로 수정되었습니다.", category.getUpdatedAt());
     }
 
+    // 카테고리 삭제
+    @Transactional
+    public DeleteCategoryResponseDto deleteCategory(Long categoryId, String token) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // categoryId로 category 찾기
+        Category category = categoryRepository.findByCategoryId(categoryId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
+        // 회원 본인이 만든 카테고리가 아닌 경우 삭제 불가
+        if(category.getUser() == null || !user.getUserId().equals(category.getUser().getUserId()))
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        // 카테고리 삭제 - 예산, 지출과의 연결로 인한 논리 삭제
+        category.deleteCategory();
+        // responseDto 반환
+        return new DeleteCategoryResponseDto("카테고리 " + category.getCategoryName() + "가 삭제되었습니다.", category.getDeletedAt());
+    }
+
     // accessToken에서 회원 정보 가져오기
     public User getUserInfo(String token) {
         String accessToken = token.split("Bearer ")[1];
