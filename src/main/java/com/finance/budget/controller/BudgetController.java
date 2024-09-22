@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/budgets")
 @RequiredArgsConstructor
@@ -17,8 +19,8 @@ public class BudgetController {
 
     // 예산 설정
     @PostMapping
-    public ResponseEntity<CreateBudgetResponseDto> createBudget(@RequestHeader(value = "Authorization") String token, @Valid @RequestBody CreateBudgetRequestDto requestDto) {
-        CreateBudgetResponseDto responseDto = budgetService.createBudget(token, requestDto);
+    public ResponseEntity<List<CreateBudgetResponseDto>> createBudget(@RequestHeader(value = "Authorization") String token, @Valid @RequestBody List<CreateBudgetRequestDto> requestDto) {
+        List<CreateBudgetResponseDto> responseDto = budgetService.createBudget(token, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 }
