@@ -36,4 +36,11 @@ public class CategoryController {
         ModifyCategoryResponseDto responseDto = categoryService.modifyCategory(categoryId, token, requestDto);
         return ResponseEntity.ok().body(responseDto);
     }
+
+    // 카테고리 삭제
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<DeleteCategoryResponseDto> deleteCategory(@PathVariable Long categoryId, @RequestHeader(value = "Authorization") String token) {
+        DeleteCategoryResponseDto responseDto = categoryService.deleteCategory(categoryId, token);
+        return ResponseEntity.ok().body(responseDto);
+    }
 }
