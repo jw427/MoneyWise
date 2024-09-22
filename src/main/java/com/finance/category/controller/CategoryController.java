@@ -1,8 +1,6 @@
 package com.finance.category.controller;
 
-import com.finance.category.dto.CategoryListResponseDto;
-import com.finance.category.dto.CreateCategoryRequestDto;
-import com.finance.category.dto.CreateCategoryResponseDto;
+import com.finance.category.dto.*;
 import com.finance.category.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +27,13 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryListResponseDto>> getCategoryList(@RequestHeader(value = "Authorization")String token) {
         List<CategoryListResponseDto> responseDto = categoryService.getCategoryList(token);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    // 카테고리 수정
+    @PatchMapping("/{categoryId}")
+    public ResponseEntity<ModifyCategoryResponseDto> modifyCategory(@PathVariable Long categoryId, @RequestHeader(value = "Authorization") String token, @Valid @RequestBody ModifyCategoryRequestDto requestDto) {
+        ModifyCategoryResponseDto responseDto = categoryService.modifyCategory(categoryId, token, requestDto);
         return ResponseEntity.ok().body(responseDto);
     }
 }
