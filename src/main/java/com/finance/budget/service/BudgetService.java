@@ -4,12 +4,9 @@ import com.finance.budget.domain.Budget;
 import com.finance.budget.dto.*;
 import com.finance.budget.repository.BudgetRepository;
 import com.finance.category.domain.Category;
-import com.finance.category.dto.ModifyBudgetResponseDto;
+import com.finance.budget.dto.ModifyBudgetResponseDto;
 import com.finance.category.repository.CategoryRepository;
-import com.finance.exception.ConflictException;
-import com.finance.exception.ErrorCode;
-import com.finance.exception.ForbiddenException;
-import com.finance.exception.NotFoundException;
+import com.finance.exception.*;
 import com.finance.user.config.TokenProvider;
 import com.finance.user.domain.User;
 import com.finance.user.repository.UserRepository;
@@ -107,6 +104,34 @@ public class BudgetService {
         budget.deleteBudget();
         // responseDto 반환
         return new DeleteBudgetResponseDto(budget.getCategory().getCategoryName() + "의 예산이 삭제되었습니다.", budget.getDeletedAt());
+    }
+
+    // 예산 추천
+    public List<RecommendBudgetResponseDto> recommendBudget(RecommendBudgetRequestDto requestDto) {
+        // 추천 받을 예산 총액의 범위 (±20%)
+        Long minAmount = Math.round(requestDto.totalAmount() * 0.8);
+        Long maxAmount = Math.round(requestDto.totalAmount() * 1.2);
+        // 입력받은 예산 총액의 ±20% 범위 안에 예산 총액을 설정한 회원들의 기본 카테고리별 예산 평균 비율 조회
+        List<BudgetRatioDto> budgetRatioDto = budgetRepository.findBudgetRatioByTotalAmountRange(minAmount, maxAmount);
+        // 추천 받을 예산 총액의 범위에 다른 회원의 예산 총액이 존재하지 않는 경우
+        if(budgetRatioDto.isEmpty())
+            throw new BadRequestException(ErrorCode.CANNOT_RECOMMEND_BUDGET);
+        // responseDto
+        List<RecommendBudgetResponseDto> responseDto = new ArrayList<>();
+        // 기타 항목 계산을 위한 변수
+        Long plutAmount = 0L;
+        // ratio -> responseDto로 변환
+        for (BudgetRatioDto ratio : budgetRatioDto) {
+            // 예산 평균 비율이 0.05 이상인 경우
+            if(ratio.amountRatio() >= 0.05) {
+                Long recommendAmount = Math.round((requestDto.totalAmount() * ratio.amountRatio()) / 100.0) * 100;
+                plutAmount += recommendAmount;
+                responseDto.add(new RecommendBudgetResponseDto(ratio.categoryName(), recommendAmount));
+            }
+        }
+        if(requestDto.totalAmount() - plutAmount > 0)
+            responseDto.add(new RecommendBudgetResponseDto("기타", requestDto.totalAmount() - plutAmount));
+        return responseDto;
     }
 
     // accessToken에서 회원 정보 가져오기

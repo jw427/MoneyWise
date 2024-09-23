@@ -2,7 +2,7 @@ package com.finance.budget.controller;
 
 import com.finance.budget.dto.*;
 import com.finance.budget.service.BudgetService;
-import com.finance.category.dto.ModifyBudgetResponseDto;
+import com.finance.budget.dto.ModifyBudgetResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,5 +43,12 @@ public class BudgetController {
     public ResponseEntity<DeleteBudgetResponseDto> deleteBudget(@PathVariable Long budgetId, @RequestHeader(value = "Authorization") String token) {
         DeleteBudgetResponseDto responseDto = budgetService.deleteBudget(budgetId, token);
         return ResponseEntity.ok().body(responseDto);
+    }
+
+    // 예산 추천
+    @GetMapping("/recommendation")
+    public ResponseEntity<List<RecommendBudgetResponseDto>> recommendBudget(@Valid @RequestBody RecommendBudgetRequestDto requestDto) {
+        List<RecommendBudgetResponseDto> response = budgetService.recommendBudget(requestDto);
+        return ResponseEntity.ok().body(response);
     }
 }

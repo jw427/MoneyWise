@@ -1,4 +1,4 @@
-package com.finance.category.dto;
+package com.finance.budget.dto;
 
 import java.time.LocalDateTime;
 
