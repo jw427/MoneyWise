@@ -26,7 +26,8 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
 
     // 예산
-    ALREADY_EXIST_BUDGET(HttpStatus.CONFLICT, "해당 카테고리의 예산이 이미 존재합니다.");
+    ALREADY_EXIST_BUDGET(HttpStatus.CONFLICT, "해당 카테고리의 예산이 이미 존재합니다."),
+    BUDGET_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예산입니다.");
 
     private final HttpStatus status;
     private final String message;

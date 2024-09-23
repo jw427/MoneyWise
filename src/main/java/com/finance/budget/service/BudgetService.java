@@ -4,11 +4,14 @@ import com.finance.budget.domain.Budget;
 import com.finance.budget.dto.BudgetListResponseDto;
 import com.finance.budget.dto.CreateBudgetRequestDto;
 import com.finance.budget.dto.CreateBudgetResponseDto;
+import com.finance.budget.dto.ModifyBudgetRequestDto;
 import com.finance.budget.repository.BudgetRepository;
 import com.finance.category.domain.Category;
+import com.finance.category.dto.ModifyBudgetResponseDto;
 import com.finance.category.repository.CategoryRepository;
 import com.finance.exception.ConflictException;
 import com.finance.exception.ErrorCode;
+import com.finance.exception.ForbiddenException;
 import com.finance.exception.NotFoundException;
 import com.finance.user.config.TokenProvider;
 import com.finance.user.domain.User;
@@ -73,6 +76,23 @@ public class BudgetService {
                 .collect(Collectors.toList());
         // responsedto 반환
         return responseDto;
+    }
+
+    // 예산 수정
+    @Transactional
+    public ModifyBudgetResponseDto modifyBudget(Long budgetId, String token, ModifyBudgetRequestDto requestDto) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // budgetId로 budget 찾기
+        Budget budget = budgetRepository.findByBudgetId(budgetId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BUDGET_NOT_FOUND));
+        // 회원 본인이 만든 예산이 아닌 경우 수정 불가
+        if(!user.getUserId().equals(budget.getUser().getUserId()))
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        // 예산 수정
+        budget.modifyBudget(requestDto.amount());
+        // responseDto 반환
+        return new ModifyBudgetResponseDto("예산 금액이 " + requestDto.amount() + "원으로 수정되었습니다.", budget.getUpdatedAt());
     }
 
     // accessToken에서 회원 정보 가져오기
