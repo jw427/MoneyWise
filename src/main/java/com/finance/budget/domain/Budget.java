@@ -47,4 +47,9 @@ public class Budget {
         this.amount = amount;
         return this;
     }
+
+    public Budget deleteBudget() {
+        this.deletedAt = LocalDateTime.now();
+        return this;
+    }
 }
