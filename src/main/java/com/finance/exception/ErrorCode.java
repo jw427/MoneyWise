@@ -28,7 +28,10 @@ public enum ErrorCode {
     // 예산
     ALREADY_EXIST_BUDGET(HttpStatus.CONFLICT, "해당 카테고리의 예산이 이미 존재합니다."),
     BUDGET_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 예산입니다."),
-    CANNOT_RECOMMEND_BUDGET(HttpStatus.BAD_REQUEST, "예산을 추천할 수 없습니다.");
+    CANNOT_RECOMMEND_BUDGET(HttpStatus.BAD_REQUEST, "예산을 추천할 수 없습니다."),
+
+    // 지출
+    BUDGET_NOT_EXIST(HttpStatus.BAD_REQUEST, "해당 카테고리로 설정된 예산이 없어 지출을 생성할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
