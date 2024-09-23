@@ -1,6 +1,7 @@
 package com.finance.budget.service;
 
 import com.finance.budget.domain.Budget;
+import com.finance.budget.dto.BudgetListResponseDto;
 import com.finance.budget.dto.CreateBudgetRequestDto;
 import com.finance.budget.dto.CreateBudgetResponseDto;
 import com.finance.budget.repository.BudgetRepository;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +55,23 @@ public class BudgetService {
             responseDto.add(new CreateBudgetResponseDto(category.getCategoryName(), requestDto.amount(), budget.getCreatedAt()));
         }
         // responseDto 반환
+        return responseDto;
+    }
+
+    // 예산 전체 조회
+    @Transactional(readOnly = true)
+    public List<BudgetListResponseDto> getBudgetList(String token) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // 회원의 예산 모두 조회
+        List<Budget> budgetList = budgetRepository.findByUser_UserId(user.getUserId());
+        // responsedto로 변환
+        List<BudgetListResponseDto> responseDto = budgetList.stream()
+                .map(list -> new BudgetListResponseDto(
+                        list.getCategory().getCategoryName(),
+                        list.getAmount()))
+                .collect(Collectors.toList());
+        // responsedto 반환
         return responseDto;
     }
 
