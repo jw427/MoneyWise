@@ -44,4 +44,11 @@ public class BudgetController {
         DeleteBudgetResponseDto responseDto = budgetService.deleteBudget(budgetId, token);
         return ResponseEntity.ok().body(responseDto);
     }
+
+    // 예산 추천
+    @GetMapping("/recommendation")
+    public ResponseEntity<List<RecommendBudgetResponseDto>> recommendBudget(@Valid @RequestBody RecommendBudgetRequestDto requestDto) {
+        List<RecommendBudgetResponseDto> response = budgetService.recommendBudget(requestDto);
+        return ResponseEntity.ok().body(response);
+    }
 }
