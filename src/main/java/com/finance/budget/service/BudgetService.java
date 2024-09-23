@@ -124,7 +124,7 @@ public class BudgetService {
         for (BudgetRatioDto ratio : budgetRatioDto) {
             // 예산 평균 비율이 0.05 이상인 경우
             if(ratio.amountRatio() >= 0.05) {
-                Long recommendAmount = Math.round((requestDto.totalAmount() * ratio.amountRatio()) / 10.0) * 10;
+                Long recommendAmount = Math.round((requestDto.totalAmount() * ratio.amountRatio()) / 100.0) * 100;
                 plutAmount += recommendAmount;
                 responseDto.add(new RecommendBudgetResponseDto(ratio.categoryName(), recommendAmount));
             }
