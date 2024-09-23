@@ -1,9 +1,6 @@
 package com.finance.budget.controller;
 
-import com.finance.budget.dto.BudgetListResponseDto;
-import com.finance.budget.dto.CreateBudgetRequestDto;
-import com.finance.budget.dto.CreateBudgetResponseDto;
-import com.finance.budget.dto.ModifyBudgetRequestDto;
+import com.finance.budget.dto.*;
 import com.finance.budget.service.BudgetService;
 import com.finance.category.dto.ModifyBudgetResponseDto;
 import jakarta.validation.Valid;
@@ -38,6 +35,13 @@ public class BudgetController {
     @PatchMapping("/{budgetId}")
     public ResponseEntity<ModifyBudgetResponseDto> modifyBudget(@PathVariable Long budgetId, @RequestHeader(value = "Authorization") String token, @Valid @RequestBody ModifyBudgetRequestDto requestDto) {
         ModifyBudgetResponseDto responseDto = budgetService.modifyBudget(budgetId, token, requestDto);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    // 예산 삭제
+    @DeleteMapping("/{budgetId}")
+    public ResponseEntity<DeleteBudgetResponseDto> deleteBudget(@PathVariable Long budgetId, @RequestHeader(value = "Authorization") String token) {
+        DeleteBudgetResponseDto responseDto = budgetService.deleteBudget(budgetId, token);
         return ResponseEntity.ok().body(responseDto);
     }
 }
