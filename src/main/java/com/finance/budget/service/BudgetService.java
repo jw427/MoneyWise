@@ -1,10 +1,7 @@
 package com.finance.budget.service;
 
 import com.finance.budget.domain.Budget;
-import com.finance.budget.dto.BudgetListResponseDto;
-import com.finance.budget.dto.CreateBudgetRequestDto;
-import com.finance.budget.dto.CreateBudgetResponseDto;
-import com.finance.budget.dto.ModifyBudgetRequestDto;
+import com.finance.budget.dto.*;
 import com.finance.budget.repository.BudgetRepository;
 import com.finance.category.domain.Category;
 import com.finance.category.dto.ModifyBudgetResponseDto;
@@ -93,6 +90,23 @@ public class BudgetService {
         budget.modifyBudget(requestDto.amount());
         // responseDto 반환
         return new ModifyBudgetResponseDto("예산 금액이 " + requestDto.amount() + "원으로 수정되었습니다.", budget.getUpdatedAt());
+    }
+
+    // 예산 삭제
+    @Transactional
+    public DeleteBudgetResponseDto deleteBudget(Long budgetId, String token) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // budgetId로 budget 찾기
+        Budget budget = budgetRepository.findByBudgetId(budgetId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.BUDGET_NOT_FOUND));
+        // 회원 본인이 만든 예산이 아닌 경우 삭제 불가
+        if(!user.getUserId().equals(budget.getUser().getUserId()))
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        // 예산 삭제 - 논리 삭제
+        budget.deleteBudget();
+        // responseDto 반환
+        return new DeleteBudgetResponseDto(budget.getCategory().getCategoryName() + "의 예산이 삭제되었습니다.", budget.getDeletedAt());
     }
 
     // accessToken에서 회원 정보 가져오기
