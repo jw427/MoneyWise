@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -32,7 +33,7 @@ public class Expense {
     private String memo;
 
     @Column(nullable = false)
-    private LocalDateTime expensedAt;
+    private LocalDate expensedAt;
 
     @CreatedDate
     @Column(nullable = false)
