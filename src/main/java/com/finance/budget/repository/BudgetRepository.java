@@ -17,4 +17,8 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
     // 회원 식별값으로 예산 전체 조회
     @Query("SELECT b FROM Budget b WHERE b.user.userId = :userId AND b.deletedAt IS NULL")
     List<Budget> findByUser_UserId(@Param("userId") UUID userId);
+
+    // 예산 식별값으로 예산 찾기
+    @Query("SELECT b FROM Budget b WHERE b.budgetId = :budgetId AND b.deletedAt IS NULL")
+    Optional<Budget> findByBudgetId(@Param("budgetId") Long budgetId);
 }

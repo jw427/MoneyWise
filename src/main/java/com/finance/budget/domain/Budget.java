@@ -42,4 +42,9 @@ public class Budget {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    public Budget modifyBudget(Long amount) {
+        this.amount = amount;
+        return this;
+    }
 }
