@@ -6,10 +6,7 @@ import com.finance.budget.repository.BudgetRepository;
 import com.finance.category.domain.Category;
 import com.finance.budget.dto.ModifyBudgetResponseDto;
 import com.finance.category.repository.CategoryRepository;
-import com.finance.exception.ConflictException;
-import com.finance.exception.ErrorCode;
-import com.finance.exception.ForbiddenException;
-import com.finance.exception.NotFoundException;
+import com.finance.exception.*;
 import com.finance.user.config.TokenProvider;
 import com.finance.user.domain.User;
 import com.finance.user.repository.UserRepository;
@@ -116,6 +113,9 @@ public class BudgetService {
         Long maxAmount = Math.round(requestDto.totalAmount() * 1.2);
         // 입력받은 예산 총액의 ±20% 범위 안에 예산 총액을 설정한 회원들의 기본 카테고리별 예산 평균 비율 조회
         List<BudgetRatioDto> budgetRatioDto = budgetRepository.findBudgetRatioByTotalAmountRange(minAmount, maxAmount);
+        // 추천 받을 예산 총액의 범위에 다른 회원의 예산 총액이 존재하지 않는 경우
+        if(budgetRatioDto.isEmpty())
+            throw new BadRequestException(ErrorCode.CANNOT_RECOMMEND_BUDGET);
         // responseDto
         List<RecommendBudgetResponseDto> responseDto = new ArrayList<>();
         // 기타 항목 계산을 위한 변수
