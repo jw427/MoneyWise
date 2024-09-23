@@ -2,7 +2,7 @@ package com.finance.budget.controller;
 
 import com.finance.budget.dto.*;
 import com.finance.budget.service.BudgetService;
-import com.finance.category.dto.ModifyBudgetResponseDto;
+import com.finance.budget.dto.ModifyBudgetResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

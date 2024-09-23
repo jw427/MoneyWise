@@ -4,7 +4,7 @@ import com.finance.budget.domain.Budget;
 import com.finance.budget.dto.*;
 import com.finance.budget.repository.BudgetRepository;
 import com.finance.category.domain.Category;
-import com.finance.category.dto.ModifyBudgetResponseDto;
+import com.finance.budget.dto.ModifyBudgetResponseDto;
 import com.finance.category.repository.CategoryRepository;
 import com.finance.exception.ConflictException;
 import com.finance.exception.ErrorCode;
