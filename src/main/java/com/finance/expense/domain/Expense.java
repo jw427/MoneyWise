@@ -63,4 +63,9 @@ public class Expense {
         this.category = category;
         return this;
     }
+
+    public Expense deleteExpense() {
+        this.deletedAt = LocalDateTime.now();
+        return this;
+    }
 }

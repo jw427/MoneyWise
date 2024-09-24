@@ -131,8 +131,8 @@ public class ExpenseService {
                 requestDto.excludeFromTotal(),
                 category
         );
-        // responseDto 변환
-        ModifyExpenseResponseDto responseDto = new ModifyExpenseResponseDto(
+        // responseDto 반환
+        return new ModifyExpenseResponseDto(
                 category.getCategoryName(),
                 requestDto.amount(),
                 requestDto.memo(),
@@ -141,8 +141,23 @@ public class ExpenseService {
                 expense.getUpdatedAt(),
                 requestDto.excludeFromTotal()
         );
+    }
+
+    // 지출 삭제
+    @Transactional
+    public DeleteExpenseResponseDto deleteExpense(Long expenseId, String token) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // expenseId로 expense 찾기
+        Expense expense = expenseRepository.findByExpenseId(expenseId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.EXPENSE_NOT_FOUND));
+        // 회원 본인의 지출이 아닌 경우 삭제 불가
+        if(!user.getUserId().equals(expense.getUser().getUserId()))
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        // 지출 삭제
+        expense.deleteExpense();
         // responseDto 반환
-        return responseDto;
+        return new DeleteExpenseResponseDto("지출을 삭제했습니다.", expense.getDeletedAt());
     }
 
     // accessToken에서 회원 정보 가져오기
