@@ -5,12 +5,10 @@ import com.finance.category.domain.Category;
 import com.finance.category.repository.CategoryRepository;
 import com.finance.exception.BadRequestException;
 import com.finance.exception.ErrorCode;
+import com.finance.exception.ForbiddenException;
 import com.finance.exception.NotFoundException;
 import com.finance.expense.domain.Expense;
-import com.finance.expense.dto.CreateExpenseRequestDto;
-import com.finance.expense.dto.CreateExpenseResponseDto;
-import com.finance.expense.dto.ExpenseListResponseDto;
-import com.finance.expense.dto.ExpenseTotalResponseDto;
+import com.finance.expense.dto.*;
 import com.finance.expense.repository.ExpenseRepository;
 import com.finance.user.config.TokenProvider;
 import com.finance.user.domain.User;
@@ -84,6 +82,31 @@ public class ExpenseService {
                         Collectors.summingLong(ExpenseListResponseDto::amount)
                 ));
         return new ExpenseTotalResponseDto(expenseList, totalExpenseAmount, categoryExpenseAmount);
+    }
+
+    // 지출 상세 조회
+    @Transactional(readOnly = true)
+    public ExpenseDetailResponseDto getExpenseDetail(Long expenseId, String token) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // expenseId로 expense 찾기
+        Expense expense = expenseRepository.findByExpenseId(expenseId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.EXPENSE_NOT_FOUND));
+        // 회원 본인의 지출이 아닌 경우 조회 불가
+        if(!user.getUserId().equals(expense.getUser().getUserId()))
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        // responseDto 변환
+        ExpenseDetailResponseDto responseDto = new ExpenseDetailResponseDto(
+                expense.getCategory().getCategoryName(),
+                expense.getAmount(),
+                expense.getMemo(),
+                expense.getExpensedAt(),
+                expense.getCreatedAt(),
+                expense.getUpdatedAt(),
+                expense.isExcludeFromTotal()
+        );
+        // responseDto 반환
+        return responseDto;
     }
 
     // accessToken에서 회원 정보 가져오기
