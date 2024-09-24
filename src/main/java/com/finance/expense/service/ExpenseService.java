@@ -109,6 +109,42 @@ public class ExpenseService {
         return responseDto;
     }
 
+    // 지출 수정
+    @Transactional
+    public ModifyExpenseResponseDto modifyExpense(Long expenseId, String token, ModifyExpenseRequestDto requestDto) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // categoryId로 category 찾기
+        Category category = categoryRepository.findByCategoryId(requestDto.categoryId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.CATEGORY_NOT_FOUND));
+        // expenseId로 expense 찾기
+        Expense expense = expenseRepository.findByExpenseId(expenseId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.EXPENSE_NOT_FOUND));
+        // 회원 본인의 지출이 아닌 경우 수정 불가
+        if(!user.getUserId().equals(expense.getUser().getUserId()))
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        // 지출 수정
+        expense.modifyExpense(
+                requestDto.amount(),
+                requestDto.memo(),
+                requestDto.expensedAt(),
+                requestDto.excludeFromTotal(),
+                category
+        );
+        // responseDto 변환
+        ModifyExpenseResponseDto responseDto = new ModifyExpenseResponseDto(
+                category.getCategoryName(),
+                requestDto.amount(),
+                requestDto.memo(),
+                requestDto.expensedAt(),
+                expense.getCreatedAt(),
+                expense.getUpdatedAt(),
+                requestDto.excludeFromTotal()
+        );
+        // responseDto 반환
+        return responseDto;
+    }
+
     // accessToken에서 회원 정보 가져오기
     public User getUserInfo(String token) {
         String accessToken = token.split("Bearer ")[1];

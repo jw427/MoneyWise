@@ -54,4 +54,13 @@ public class Expense {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    public Expense modifyExpense(Long amount, String memo, LocalDate expensedAt, boolean excludeFromTotal, Category category) {
+        this.amount = amount;
+        this.memo = memo;
+        this.expensedAt = expensedAt;
+        this.excludeFromTotal = excludeFromTotal;
+        this.category = category;
+        return this;
+    }
 }
