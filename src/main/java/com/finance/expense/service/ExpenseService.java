@@ -9,6 +9,8 @@ import com.finance.exception.NotFoundException;
 import com.finance.expense.domain.Expense;
 import com.finance.expense.dto.CreateExpenseRequestDto;
 import com.finance.expense.dto.CreateExpenseResponseDto;
+import com.finance.expense.dto.ExpenseListResponseDto;
+import com.finance.expense.dto.ExpenseTotalResponseDto;
 import com.finance.expense.repository.ExpenseRepository;
 import com.finance.user.config.TokenProvider;
 import com.finance.user.domain.User;
@@ -16,6 +18,11 @@ import com.finance.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +57,33 @@ public class ExpenseService {
         expenseRepository.save(expense);
         // responseDto 반환
         return new CreateExpenseResponseDto(category.getCategoryName(), requestDto.amount(), requestDto.expensedAt(), expense.getCreatedAt(), requestDto.excludeFromTotal());
+    }
+
+    // 지출 목록 조회
+    @Transactional(readOnly = true)
+    public ExpenseTotalResponseDto getExpenseList(String token, LocalDate startAt, LocalDate endAt, Long categoryId, Long minAmount, Long maxAmount) {
+        // accessToken에서 회원 정보 가져오기
+        User user = getUserInfo(token);
+        // 지출 목록 조회
+        List<ExpenseListResponseDto> expenseList = expenseRepository.findExpenses(startAt, endAt, categoryId, minAmount, maxAmount, user.getUserId());
+        // 지출 전체 합계 계산
+        Long totalExpenseAmount = expenseList.stream()
+                // 지출 합계에서 제외되지 않은 항목들만 계산
+                .filter(expense -> !expense.excludeFromTotal())
+                // 금액 합산
+                .mapToLong(ExpenseListResponseDto::amount)
+                .sum();
+        // 카테고리 별 지출 합계 계산
+        Map<String, Long> categoryExpenseAmount = expenseList.stream()
+                // 지출 합계에서 제외되지 않은 항목들만 계산
+                .filter(expense -> !expense.excludeFromTotal())
+                .collect(Collectors.groupingBy(
+                        // 카테고리명으로 그룹화
+                        ExpenseListResponseDto::categoryName,
+                        // 금액 합산
+                        Collectors.summingLong(ExpenseListResponseDto::amount)
+                ));
+        return new ExpenseTotalResponseDto(expenseList, totalExpenseAmount, categoryExpenseAmount);
     }
 
     // accessToken에서 회원 정보 가져오기
