@@ -8,9 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
+    // 입력받은 정보에 해당하는 지출 조회
     @Query("SELECT new com.finance.expense.dto.ExpenseListResponseDto(" +
             "c.categoryName, e.amount, e.expensedAt, e.createdAt, e.excludeFromTotal) " +
             "FROM Expense e " +
@@ -28,4 +30,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("minAmount") Long minAmount,
             @Param("maxAmount") Long maxAmount,
             @Param("userId") UUID userId);
+
+    // 지출 식별값으로 지출 조회
+    @Query("SELECT e FROM Expense e WHERE e.expenseId = :expenseId AND e.deletedAt IS NULL")
+    Optional<Expense> findByExpenseId(@Param("expenseId") Long expenseId);
 }
