@@ -45,4 +45,11 @@ public class ExpenseController {
         ExpenseDetailResponseDto responseDto = expenseService.getExpenseDetail(expenseId, token);
         return ResponseEntity.ok().body(responseDto);
     }
+
+    // 지출 수정
+    @PatchMapping("/{expenseId}")
+    public ResponseEntity<ModifyExpenseResponseDto> modifyExpense(@PathVariable Long expenseId, @RequestHeader(value = "Authorization") String token, @Valid @RequestBody ModifyExpenseRequestDto requestDto) {
+        ModifyExpenseResponseDto responseDto = expenseService.modifyExpense(expenseId, token, requestDto);
+        return ResponseEntity.ok().body(responseDto);
+    }
 }
