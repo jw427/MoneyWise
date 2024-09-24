@@ -1,10 +1,7 @@
 package com.finance.expense.controller;
 
 import com.finance.expense.domain.Expense;
-import com.finance.expense.dto.CreateExpenseRequestDto;
-import com.finance.expense.dto.CreateExpenseResponseDto;
-import com.finance.expense.dto.ExpenseListResponseDto;
-import com.finance.expense.dto.ExpenseTotalResponseDto;
+import com.finance.expense.dto.*;
 import com.finance.expense.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +37,12 @@ public class ExpenseController {
     ) {
         ExpenseTotalResponseDto response = expenseService.getExpenseList(token, startAt, endAt, categoryId, minAmount, maxAmount);
         return ResponseEntity.ok().body(response);
+    }
+
+    // 지출 상세 조회
+    @GetMapping("/{expenseId}")
+    public ResponseEntity<ExpenseDetailResponseDto> getExpenseDetail(@PathVariable Long expenseId, @RequestHeader(value = "Authorization") String token) {
+        ExpenseDetailResponseDto responseDto = expenseService.getExpenseDetail(expenseId, token);
+        return ResponseEntity.ok().body(responseDto);
     }
 }
