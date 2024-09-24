@@ -52,4 +52,11 @@ public class ExpenseController {
         ModifyExpenseResponseDto responseDto = expenseService.modifyExpense(expenseId, token, requestDto);
         return ResponseEntity.ok().body(responseDto);
     }
+
+    // 지출 삭제
+    @DeleteMapping("/{expenseId}")
+    public ResponseEntity<DeleteExpenseResponseDto> deleteExpense(@PathVariable Long expenseId, @RequestHeader(value = "Authorization") String token) {
+        DeleteExpenseResponseDto responseDto = expenseService.deleteExpense(expenseId, token);
+        return ResponseEntity.ok().body(responseDto);
+    }
 }
