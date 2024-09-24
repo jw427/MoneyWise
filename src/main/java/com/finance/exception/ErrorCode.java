@@ -31,7 +31,8 @@ public enum ErrorCode {
     CANNOT_RECOMMEND_BUDGET(HttpStatus.BAD_REQUEST, "예산을 추천할 수 없습니다."),
 
     // 지출
-    BUDGET_NOT_EXIST(HttpStatus.BAD_REQUEST, "해당 카테고리로 설정된 예산이 없어 지출을 생성할 수 없습니다.");
+    BUDGET_NOT_EXIST(HttpStatus.BAD_REQUEST, "해당 카테고리로 설정된 예산이 없어 지출을 생성할 수 없습니다."),
+    EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지출입니다.");
 
     private final HttpStatus status;
     private final String message;
