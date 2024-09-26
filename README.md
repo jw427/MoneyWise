@@ -253,6 +253,7 @@ src
 <br>
 
 ## 💌 API 명세 <a id="api-명세"></a>
+### 👉 [API 명세서](https://documenter.getpostman.com/view/29531239/2sAXqy1e7e)
 | No | 기능 | Method | URL |
 |----|------|--------|------|
 | 1 | 회원가입 | `POST` | `/api/users/sign-up` |
