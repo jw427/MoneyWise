@@ -1,10 +1,12 @@
 spring:
-  profiles:
-    include:
-      - secret
+  config:
+    import: optional:file:.env[.properties]
 
   datasource:
+    url: ${DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     properties:
@@ -14,6 +16,7 @@ spring:
     hibernate:
       ddl-auto: update
     defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
 
   sql:
     init:
@@ -23,3 +26,4 @@ spring:
     redis:
       host: localhost
       port: 6379
+      password: ${REDIS_PASSWORD}
