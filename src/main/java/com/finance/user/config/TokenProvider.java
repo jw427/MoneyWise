@@ -21,11 +21,11 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class TokenProvider {
-    @Value("${JWT_SECRET_KEY}")
+    @Value("${jwt.secret_key}")
     private String key;
-    @Value("${ACCESS_TOKEN_EXPIRATION}")
+    @Value("${jwt.access_token_expiration}")
     private long accessTokenValidTime;
-    @Value("${REFRESH_TOKEN_EXPIRATION}")
+    @Value("${jwt.refresh_token_expiration}")
     private long refreshTokenValidTime;
 
     private final String BEARER_PREFIX = "Bearer ";
