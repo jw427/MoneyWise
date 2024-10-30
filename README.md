@@ -34,8 +34,14 @@
 ### 1. 환경변수 및 환경설정 파일 생성
 - `.env` 파일
 ```
-DB_NAME=
+DB_URL=
+DB_USERNAME=
+DB_PASSWORD=
+DB_PORT=
+
+MYSQL_NAME=
 MYSQL_PASSWORD=
+
 REDIS_PASSWORD=
 ```
 - `application-secret.yml` 파일에 DB 정보를 설정해주세요.
