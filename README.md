@@ -278,6 +278,219 @@ src
 | 17 | 지출 삭제 | `DELETE` | `/api/expenses/:expenseId` |
 <br>
 
+## ⚡ 트러블 슈팅
+<details>
+<summary>⚡ build시 Gradle이 jdk를 찾지 못하는 문제 발생</summary>
+<div markdown="1">
+<ul>
+<div>
+
+### 문제 상황
+
+- 프로젝트 build시 Gradle이 jdk를 찾지 못하는 문제 발생
+    
+    ```yaml
+    FAILURE: Build failed with an exception.
+    
+    * What went wrong:
+    Could not determine the dependencies of task ':bootJar'.
+    > Could not resolve all dependencies for configuration ':runtimeClasspath'.
+       > Failed to calculate the value of task ':compileJava' property 'javaCompiler'.
+          > Cannot find a Java installation on your machine matching this tasks requirements: {languageVersion=17, vendor=any vendor, implementation=vendor-specific} for LINUX on x86_64.
+             > No locally installed toolchains match and toolchain download repositories have not been configured.
+    ```
+    
+
+### 원인 분석
+
+1. java 환경 변수 설정
+2. 벤더 설정 추가
+3. gradle.properties 파일에 설정 추가
+
+### 해결 과정
+
+- 위 세 가지 원인을 해결해도 build시 똑같은 오류 발생
+- 에러 코드 마지막 문장을 해석하면 “로컬에 설치된 툴체인 중에서 일치하는 것이 없으며, 툴체인을 다운로드할 레포지토리도 설정되지 않았습니다.”
+    
+    ➡️ 즉, 현재 시스템에 요구되는 버전의 툴체인이 설치되어 있지 않으며, 툴체인을 자동으로 다운로드할 수 있는 레포지토리 설정도 누락된 상태라는 의미
+    
+- 공식 문서를 참고하면, Toolchain Resolver Plugins은 빌드에 필요한 툴체인을 자동으로 다운로드하고 구성하므로, 이 중 하나인 Foojay Toolchains Plugin을 적용하기 위해 Foojay Toolchain Resolver를 사용해보기로 함
+    
+    ➡️ 이를 위해 settings.gradle에 아래 내용을 추가 후 다시 build
+    
+    ```yaml
+    plugins {
+        id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    }
+    ```
+    
+
+### 결과
+
+- 오류 없이 build 성공
+
+### 참고
+
+[Gradle 공식 문서](https://docs.gradle.org/8.10.2/userguide/toolchains.html#sub:download_repositories)
+</div>
+</ul>
+</div>
+</details>
+<details>
+<summary>⚡ EC2 배포 시 build 오래 걸리는 문제</summary>
+<div markdown="1">
+<ul>
+<div>
+
+### 문제 상황
+
+- EC2 배포 과정에서 프로젝트 build시 더 이상 진행되지 않고 멈춰버리는 상황이 자주 발생
+    
+    EC2 인스턴스를 중지했다가 재시작하면 속도가 빨라지지만, 그 이후 계속 서버가 느려짐
+    
+
+### 원인 분석
+
+- 검색해서 찾아본 결과 메모리 부족 때문에 생기는 현상이라고 파악
+    
+    ➡️ 현재 AWS free tier로 서비스를 사용중인데, free tier로 제공하는 t2.micro의 메모리는 고작 1GB 정도로, 메모리 부족 때문에 gradle 멈춤 현상이 발생하는 것이겠다고 판단
+    
+
+### 해결 과정
+
+- 공식 홈페이지에서 제공하는 스왑 파일을 사용하여 메모리를 할당해주는 방법 사용
+    
+    이때 SWAP 메모리란 RAM이 부족할 경우 HDD의 일정공간을 마치 RAM처럼 사용하는 것을 의미
+    
+1. 메모리 확인
+    
+    ```yaml
+    free
+    ```
+    
+    ![image](https://github.com/user-attachments/assets/463d0531-c6ee-46f9-9514-8e519f39ef2e)
+    
+2. swap 메모리 할당 - 2GB 크기의 스왑 파일(128M씩 16개 공간)
+    
+    ```yaml
+    sudo dd if=/dev/zero of=/swapfile bs=128M count=16
+    ```
+    
+3. 스왑 파일에 대한 읽기 및 쓰기 권한 업데이트
+    
+    ```yaml
+    sudo chmod 600 /swapfile
+    ```
+    
+4. Linux 스왑 영역 설정
+    
+    ```yaml
+    sudo mkswap /swapfile
+    ```
+    
+5. 스왑 공간에 스왑 파일을 추가하여 스왑 파일을 즉시 사용할 수 있도록 만듦
+    
+    ```yaml
+    sudo swapon /swapfile
+    ```
+    
+6. 절차가 성공적으로 완료되었는지 확인
+    
+    ```yaml
+    sudo swapon -s
+    ```
+    
+    ![image](https://github.com/user-attachments/assets/4ec6e06a-dbc5-4618-815a-812f358b176d)
+    
+7. 부팅 시 **`/etc/fstab`** 파일을 편집하여 스왑 파일을 시작
+    
+    편집기에서 파일 엶
+    
+    ```yaml
+    sudo nano /etc/fstab
+    ```
+    
+    파일 끝에 다음 새 줄을 추가하고 파일을 저장한 다음 종료
+    
+    ```yaml
+    /swapfile swap swap defaults 0 0
+    ```
+    
+8. 적용됐는지 확인
+    
+    ![image](https://github.com/user-attachments/assets/bad27509-4605-4686-acda-f657e9f7f3af)
+    
+
+### 결과
+
+- 멈춤 없이 프로젝트 build
+
+### 참고
+
+[AWS 공식 홈페이지](https://repost.aws/ko/knowledge-center/ec2-memory-swap-file)
+</div>
+</ul>
+</div>
+</details>
+<details>
+<summary>⚡ EC2 인스턴스에서 docker-compose 실행 시 생긴 Spring Boot와 DB 간의 네트워크 통신 오류</summary>
+<div markdown="1">
+<ul>
+<div>
+  
+### 문제 상황
+
+- EC2 인스턴스에서 docker-compose 실행 후 API 테스트 진행을 하니 결과가 제대로 출력되지 않는 상황 발생
+- log 출력 시 아래와 같은 에러메시지 출력
+    
+    ![image](https://github.com/user-attachments/assets/2489ac99-67b6-424d-abbe-9fa3663fcf92)
+    
+    The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server. ➡️ 애플리케이션 서버가 DB에 패킷을 보냈으나, JDBC Driver가 DB로부터 어떠한 패킷도 받지 못했다는 에러메시지
+    
+
+### 원인 분석
+
+- MySQL 서버 주소를 잘못 설정했거나, MySQL 서버가 실행중이지 않거나, 포트 설정으로 인한 방화벽 문제
+    
+    ➡️ 확인 결과 모두 문제 없이 설정됨
+    
+- 추가로 찾아본 결과, Mysql 설정 파일에서 bind-address를 제대로 설정해주지 않은 것으로 파악
+    
+    127.0.0.1은 localhost를 의미하는데, bind-address 디폴트 값이 127.0.0.1이기에 localhost에서 보내는 요청만 받게 됨
+    
+
+### 해결 과정
+
+1. EC2 인스턴스에서 설정 파일(`my.cnf`) 복사하기
+    
+    ```yaml
+    docker cp money-wise-mysql:/etc/mysql/my.cnf ./my.cnf
+    ```
+    
+2. `my.cnf` 파일 편집
+    
+    ```yaml
+    [mysqld]
+    bind-address = 0.0.0.0
+    ```
+    
+    외부에서 보내는 요청을 받기 위해 0.0.0.0 으로 설정
+    
+3. 수정한 파일을 다시 컨테이너로 복사
+    
+    ```yaml
+    docker cp ./my.cnf money-wise-mysql:/etc/my.cnf
+    ```
+    
+
+### 결과
+
+- docker-compose 재시작 후 API 테스트 결과 정상적으로 결과 출력
+</div>
+</ul>
+</div>
+</details>
+
 ## 🤔 고민 흔적 <a id="고민-흔적"></a>
 <details>
 <summary>💭 refresh token을 어떻게 관리할까?</summary>
