@@ -26,7 +26,8 @@
 2. [📁 ERD 및 디렉터리 구조](#erd-및-디렉터리-구조)
 3. [📑 구현 내용](#구현-내용)
 4. [💌 API 명세](#api-명세)
-5. [🤔 고민 흔적](#고민-흔적)
+5. [⚡ 트러블 슈팅](#트러블-슈팅)
+6. [🤔 고민 흔적](#고민-흔적)
 <br>
 
 ## 🏃‍♀️ Quick Start <a id="quick-start"></a>
@@ -278,7 +279,7 @@ src
 | 17 | 지출 삭제 | `DELETE` | `/api/expenses/:expenseId` |
 <br>
 
-## ⚡ 트러블 슈팅
+## ⚡ 트러블 슈팅 <a id="트러블-슈팅"></a>
 <details>
 <summary>⚡ build시 Gradle이 jdk를 찾지 못하는 문제 발생</summary>
 <div markdown="1">
@@ -490,6 +491,7 @@ src
 </ul>
 </div>
 </details>
+<br>
 
 ## 🤔 고민 흔적 <a id="고민-흔적"></a>
 <details>
@@ -531,21 +533,6 @@ src
 그래서 고민하던 중 _소비 금액이 비슷한 사람들은 소비 패턴이 비슷할 것_ 이라고 가정하고, 입력한 예산 총액과 비슷한 예산 총액을 설정한 회원들이 설정한 평균 값으로 추천해주는 방식을 고려하게 되었다. <br>
 입력한 예산 총액과 비슷한 예산 총액의 기준은 입력한 예산 총액의 `±20%` 범위로 설정해 해당하는 회원들의 범위를 좁히기로 결정했다. <br>
 이렇게 사용자 데이터를 기반으로 추천하여 서비스의 기획 의도를 반영하고자 했다.
-</div>
-</ul>
-</div>
-</details>
-<details>
-<summary>💭 <code>schema.sql</code>과 <code>data.sql</code>의 실행 시점을 어떻게 결정하는 것이 좋을까?</summary>
-<div markdown="1">
-<ul>
-<div>
-
-<code>schema.sql</code>은 데이터베이스 스키마를 정의하고, <code>data.sql</code>은 데이터베이스에 초기 데이터를 삽입하는 파일이다. <br>
-docker로 DB 컨테이너를 생성해 관리할 경우 해당 파일들을 언제 실행하면 좋을지 고민하게 됐다. <br>
-<code>schema.sql</code>의 경우 docker 컨테이너를 실행할 때, 즉 DB 컨테이너가 생성되고 초기화될 때 실행하고, <br>
-<code>data.sql</code>는 서버가 실행될 때, 즉 DB 구조가 이미 설정됐을 때 실행하기로 결정했다. <br>
-두 파일 모두 한 시점에 실행해도 상관없겠지만, <code>schema.sql</code>는 DB의 구조를 설정하는 데 집중하고, <code>data.sql</code>은 초기 데이터를 삽입하는 데 집중하여 각 파일의 역할을 확실히 분리하기로 했다.
 </div>
 </ul>
 </div>
