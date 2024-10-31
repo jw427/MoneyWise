@@ -24,7 +24,7 @@
 ## 🏷️ 목차
 1. [🏃‍♀️ Quick Start](#quick-start)
 2. [📁 ERD 및 디렉터리 구조](#erd-및-디렉터리-구조)
-3. [🖥️ 서비스 배포](#서비스-배포)
+3. [🖥️ 서비스 아키텍처 및 배포](#서비스-아키텍처-및-배포)
 4. [📑 구현 내용](#구현-내용)
 5. [💌 API 명세](#api-명세)
 6. [⚡ 트러블 슈팅](#트러블-슈팅)
@@ -233,10 +233,13 @@ src
 </details>
 <br>
 
-## 🖥️ 서비스 배포 <a id="서비스-배포"></a>
+## 🖥️ 서비스 아키텍처 및 배포 <a id="서비스-아키텍처-및-배포"></a>
+### 서비스 아키텍처
+<img alt="서비스 아키텍쳐" src="https://github.com/user-attachments/assets/ecf7df96-4638-47a7-b272-cc9d4b477468" width="80%" height="100%">
+
 ### 배포 이미지
 (현재는 비용 문제로 EC2 인스턴스 중지한 상태)
-![image](https://github.com/user-attachments/assets/6254eeac-208d-464c-b51a-92bf94c7823e)
+<img alt="배포 이미지" src="https://github.com/user-attachments/assets/6254eeac-208d-464c-b51a-92bf94c7823e" width="80%" height="100%">
 
 </br>
 
